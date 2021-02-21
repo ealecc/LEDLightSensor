@@ -1,11 +1,11 @@
 #define READ A0
-#define REFRESH 1000000
+#define REFRESH 1000
 
 int limit = 0;
 
 void setup() {
   // need a high baud rate to calculate 100th of a second shutter speed
-  Serial.begin(57600);
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -15,14 +15,19 @@ void loop() {
 
   // run sensor in a loop and recalculate baseline every REFRESH interval
   for (int i = 0; i < REFRESH; i++) {
-    light = (readLED(100));
-
-    // test if sensor is exposed to light
-    if (light > limit) {
-      Serial.println(1);
-    } else {
-      Serial.println(0);
+    unsigned long startTime = millis();
+    unsigned long currentTime;
+   
+    // if reading goes above limit, measure exposure time
+    while (analogRead(READ) > limit) {
+      currentTime = millis();
     }
+
+    // calculate exposure time and write to serial
+    if (currentTime > startTime) {
+    unsigned long duration = currentTime - startTime;
+    Serial.println(duration);
+    }  
   }
 }
 
